@@ -1,0 +1,18 @@
+{% extends "quotes_app/base.html" %}
+{% block content %}
+<div class="list-group">
+
+    <div class="list-group">
+        {% for quote in quotes %}
+        <a href="{% url 'edit' quote.id %}"
+           class="list-group-item">
+            <div>
+                <h5>"{{quote.quote}}"</h5>
+                <h6>by {{quote.author}}</h6>
+                <small>{{quote.updated_at}}</small>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

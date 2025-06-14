@@ -1,0 +1,49 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .utils import get_mongodb_client
+from django.urls import reverse, reverse_lazy
+from .models import Quote
+from .forms import QuoteForm
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+
+
+# Create your views here.
+
+
+class IndexView(ListView):
+    db = get_mongodb_client()
+    quotes = db.quotes.find()
+    template_name = "quotes_app/index.html"
+    context_object_name = "quotes"
+    model = Quote
+
+
+class QuoteCreateView(LoginRequiredMixin, CreateView):
+    model = Quote
+    template_name = "quotes_app/create.html"
+    form_class = QuoteForm
+    success_url = reverse_lazy('index')
+
+    def get_queryset(self):
+        queryset = super(IndexView, self).get_queryset()
+        print(queryset)
+        return queryset
+
+
+class EditView(LoginRequiredMixin, UpdateView):
+    model = Quote
+    template_name = "quotes_app/edit.html"
+    fields = ["quote", "author"]
+    success_url = reverse_lazy('index')
+
+
+class QuoteDeleteView(LoginRequiredMixin, DeleteView):
+    model = Quote
+    template_name = "quotes_app/delete.html"
+    context_object_name = "quote"
+    success_url = reverse_lazy('index')
