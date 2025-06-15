@@ -1,0 +1,10 @@
+{% extends "quotes_app/base.html" %}
+{% block content %}
+<h1>Edit Quote</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+    <a href="{% url 'delete' quote.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+</form>
+{% endblock %}

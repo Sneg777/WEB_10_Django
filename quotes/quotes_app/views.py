@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from .utils import get_mongodb_client
 from django.urls import reverse, reverse_lazy
 from .models import Quote
 from .forms import QuoteForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import (
     ListView,
     DetailView,
@@ -11,8 +13,34 @@ from django.views.generic import (
     DeleteView,
 )
 
-
 # Create your views here.
+
+from bson import ObjectId
+
+
+def main(request, page=1):
+    db = get_mongodb_client()
+    quotes = list(db.quotes.find())
+
+    per_page = 10
+    paginator = Paginator(quotes, per_page)
+
+    try:
+        quotes_on_page = paginator.page(page)
+    except PageNotAnInteger:
+        quotes_on_page = paginator.page(1)
+    except EmptyPage:
+        quotes_on_page = paginator.page(paginator.num_pages)
+
+    return render(
+        request,
+        'quotes_app/index.html',
+        {
+            'quotes': quotes_on_page.object_list,
+            'paginator': paginator,
+            'page_obj': quotes_on_page
+        }
+    )
 
 
 class IndexView(ListView):
