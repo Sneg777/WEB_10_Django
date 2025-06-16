@@ -18,16 +18,15 @@
                 <li class="nav-item">
                     <a class="nav-link active text-light" aria-current="page" href="{% url 'index' %}">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="{% url 'create' %}">Create</a>
-                </li>
             </ul>
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
                     <form action="{% url 'quotes_auth:logout' %}" method="post" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-link nav-link text-light">Logout</button>
+                        <button type="submit" class="btn btn-link nav-link text-light p-0 border-0 bg-transparent">
+                            Logout
+                        </button>
                     </form>
                 </li>
                 {% else %}
@@ -46,7 +45,6 @@
 <div class="container">
     {% block content %}
     {% endblock %}
-
 </div>
 </body>
 </html>

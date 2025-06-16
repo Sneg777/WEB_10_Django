@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 
 from .forms import RegisterForm
 
+
 class RegisterView(View):
     template_name = 'quotes_auth/register.html'
     form_class = RegisterForm
@@ -32,5 +33,3 @@ class RegisterView(View):
         else:
             print("Form errors:", form.errors)
         return render(request, self.template_name, {"form": form})
-
-

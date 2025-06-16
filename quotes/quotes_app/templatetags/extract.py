@@ -2,7 +2,6 @@ from django import template
 from bson.objectid import ObjectId
 from ..utils import get_mongodb_client
 
-
 register = template.Library()
 
 

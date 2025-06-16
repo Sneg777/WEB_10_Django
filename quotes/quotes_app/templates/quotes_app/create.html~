@@ -1,9 +1,11 @@
 {% extends "quotes_app/base.html" %}
+
 {% block content %}
-<h1>Create Quote</h1>
+<h2>Create Quote</h2>
+
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Save</button>
+    <input type="submit" value="Save" class="btn btn-primary">
 </form>
 {% endblock %}

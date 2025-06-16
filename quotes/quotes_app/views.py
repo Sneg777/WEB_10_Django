@@ -1,26 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
-from .utils import get_mongodb_client
-from django.urls import reverse, reverse_lazy
-from .models import Quote
+from django.shortcuts import render, get_object_or_404
+from .models import Quote, Author, Tag
 from .forms import QuoteForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
-
-# Create your views here.
-
-from bson import ObjectId
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse, reverse_lazy
 
 
 def main(request, page=1):
-    db = get_mongodb_client()
-    quotes = list(db.quotes.find())
+    quotes = Quote.objects.all()
 
     per_page = 10
     paginator = Paginator(quotes, per_page)
@@ -43,28 +31,31 @@ def main(request, page=1):
     )
 
 
-class IndexView(ListView):
-    template_name = "quotes_app/index.html"
-    context_object_name = "quotes"
-    model = Quote
+def quotes_by_tag(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    quotes = Quote.objects.filter(tags=tag)
+
+    return render(
+        request,
+        'quotes_app/quotes_by_tag.html',
+        {
+            'quotes': quotes,
+            'tag': tag
+        }
+    )
 
 
-class QuoteCreateView(LoginRequiredMixin, CreateView):
+class QuoteCreateView(CreateView):
     model = Quote
-    template_name = "quotes_app/create.html"
     form_class = QuoteForm
+    template_name = "quotes_app/create.html"
     success_url = reverse_lazy('index')
-
-    def get_queryset(self):
-        queryset = super(IndexView, self).get_queryset()
-        print(queryset)
-        return queryset
 
 
 class EditView(LoginRequiredMixin, UpdateView):
     model = Quote
+    form_class = QuoteForm
     template_name = "quotes_app/edit.html"
-    fields = ["quote", "author"]
     success_url = reverse_lazy('index')
 
 
@@ -73,3 +64,9 @@ class QuoteDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "quotes_app/delete.html"
     context_object_name = "quote"
     success_url = reverse_lazy('index')
+
+
+class AuthorView(DetailView):
+    model = Author
+    template_name = "quotes_app/author.html"
+    context_object_name = "author"
